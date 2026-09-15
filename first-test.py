@@ -47,9 +47,9 @@ access_token = token_data["access_token"]
 # print("Access Token:", access_token)
 
 
-url = "https://api.kroger.com/v1/products"
+url = "https://api.kroger.com/v1/locations"
 params = {
-    "filter.term": "milk",
+    "filter.zipCode.near": "23229",
     "filter.limit": 2,
 }
 headers = {
@@ -61,5 +61,34 @@ response = requests.get(url, params=params, headers=headers)
 response.raise_for_status()
 
 data = response.json()
+# print(data['data'][0].keys())
 import pprint
-pprint.pprint(data)
+pprint.pprint(data['meta'])
+
+for row in data['data']:
+    print('locationId',row['locationId'], 'chain', row['chain'], 'name', row['name'], row['address']['city'], row['address']['state'], row['address']['zipCode'])
+
+
+url = "https://api.kroger.com/v1/products"
+params = {
+    "filter.locationId": "02900525",
+    "filter.term": "milk",
+    "filter.limit": 2,
+    "filter.fulfillment": "ais"
+}
+headers = {
+    "Accept": "application/json",
+    "Authorization": f"Bearer {access_token}",  # Replace with your actual token string
+}
+
+response = requests.get(url, params=params, headers=headers)
+response.raise_for_status()
+
+data = response.json()
+import pprint
+pprint.pprint(data['data'][0].keys())
+for row in data['data']:
+    print('productId',row['productId'], 'brand', row['brand'], 'description', row['description'], row['price']['regular'], row['price']['promo'], row['price']['promoDescription'])
+
+
+pprint.pprint(data['meta'])
